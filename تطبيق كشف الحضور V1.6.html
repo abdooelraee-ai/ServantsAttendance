@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كشف حضور اجتماع الخدام العام - مطرانية أسوان</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Android & PWA Meta Tags -->
+    <meta name="theme-color" content="#1a3d6e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="حضور الخدام">
+    <link rel="manifest" id="manifest-placeholder">
+
+    <!-- Google Arabic Fonts: Cairo & Aref Ruqaa -->
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1a3d6e',
+                        secondary: '#d97706',
+                        accent: '#0284c7',
+                        roseAccent: '#e11d48'
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        signature: ['Aref Ruqaa', 'Cairo', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .font-signature {
+            font-family: 'Aref Ruqaa', 'Cairo', serif;
+        }
+
+        /* Custom Checkbox Styling */
+        .custom-checkbox {
+            appearance: none;
+            width: 1.4rem;
+            height: 1.4rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 0.375rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            background-color: #ffffff;
+        }
+
+        .custom-checkbox:checked {
+            background-color: #16a34a;
+            border-color: #16a34a;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: bold;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Print Enhancements */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            table {
+                font-size: 9pt !important;
+                width: 100% !important;
+            }
+            th, td {
+                padding: 4px 2px !important;
+                border: 1px solid #333 !important;
+            }
+            .page-header {
+                border-bottom: 2px solid #1a3d6e !important;
+                margin-bottom: 12px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-16 relative">
+
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[100] hidden transition-all duration-300">
+        <div id="toast-message" class="bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 text-sm font-bold border border-slate-700">
+            <i id="toast-icon" class="fa-solid fa-circle-info text-amber-400 text-lg"></i>
+            <span id="toast-text">تمت العملية بنجاح</span>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="bg-primary text-white shadow-xl relative border-b-4 border-secondary no-print">
+        <div class="max-w-7xl mx-auto px-4 py-5">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-4 text-center lg:text-right">
+                
+                <!-- Logo & Title Section -->
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-slate-900/40 rounded-2xl p-1.5 border-2 border-amber-400/60 shadow-xl flex items-center justify-center backdrop-blur-md relative group cursor-pointer shrink-0" onclick="openIconModal()" title="اضغط لمعاينة وتحميل أيقونة التطبيق">
+                        <svg viewBox="0 0 512 512" class="w-full h-full drop-shadow-md">
+                            <defs>
+                                <linearGradient id="headerBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#0b192e"/>
+                                    <stop offset="50%" stop-color="#1a3d6e"/>
+                                    <stop offset="100%" stop-color="#0d2342"/>
+                                </linearGradient>
+                                <linearGradient id="headerGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#fef3c7"/>
+                                    <stop offset="30%" stop-color="#f59e0b"/>
+                                    <stop offset="70%" stop-color="#d97706"/>
+                                    <stop offset="100%" stop-color="#b45309"/>
+                                </linearGradient>
+                                <linearGradient id="headerEmeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#34d399"/>
+                                    <stop offset="100%" stop-color="#059669"/>
+                                </linearGradient>
+                                <linearGradient id="headerBookGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#ffffff"/>
+                                    <stop offset="100%" stop-color="#e2e8f0"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#headerBgGrad)" stroke="url(#headerGoldGrad)" stroke-width="8"/>
+                            <circle cx="256" cy="220" r="140" fill="none" stroke="url(#headerGoldGrad)" stroke-width="2" stroke-dasharray="6,8" opacity="0.35"/>
+                            <g>
+                                <path d="M 240 80 L 272 80 L 272 320 L 240 320 Z" fill="url(#headerGoldGrad)"/>
+                                <path d="M 120 204 L 392 204 L 392 236 L 120 236 Z" fill="url(#headerGoldGrad)"/>
+                                <circle cx="256" cy="58" r="9" fill="url(#headerGoldGrad)"/>
+                                <circle cx="98" cy="220" r="9" fill="url(#headerGoldGrad)"/>
+                                <circle cx="414" cy="220" r="9" fill="url(#headerGoldGrad)"/>
+                                <circle cx="256" cy="342" r="9" fill="url(#headerGoldGrad)"/>
+                                <circle cx="256" cy="220" r="38" fill="#1a3d6e" stroke="url(#headerGoldGrad)" stroke-width="6"/>
+                                <circle cx="256" cy="220" r="18" fill="url(#headerGoldGrad)"/>
+                            </g>
+                            <g transform="translate(0, 30)">
+                                <path d="M 140 330 C 180 320 230 325 252 335 L 252 425 C 230 415 180 410 140 420 Z" fill="url(#headerBookGrad)" stroke="#cbd5e1" stroke-width="2"/>
+                                <path d="M 372 330 C 332 320 282 325 260 335 L 260 425 C 282 415 332 410 372 420 Z" fill="url(#headerBookGrad)" stroke="#cbd5e1" stroke-width="2"/>
+                                <path d="M 252 335 Q 256 332 260 335 L 260 425 Q 256 422 252 425 Z" fill="#d97706"/>
+                                <line x1="160" y1="355" x2="235" y2="350" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="160" y1="375" x2="235" y2="370" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="277" y1="350" x2="352" y2="355" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="277" y1="370" x2="352" y2="375" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                            </g>
+                            <g transform="translate(320, 310)">
+                                <circle cx="45" cy="45" r="42" fill="#0f172a" stroke="url(#headerGoldGrad)" stroke-width="4"/>
+                                <circle cx="45" cy="45" r="36" fill="url(#headerEmeraldGrad)"/>
+                                <path d="M 28 45 L 39 56 L 62 33" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs md:text-sm text-amber-300 font-bold tracking-wide">مطرانية الأقباط الأرثوذكس بأسوان</p>
+                        <h1 id="church-title-display" class="text-lg md:text-2xl font-black">كشف حضور اجتماع الخدام العام</h1>
+                        <p class="text-xs text-blue-200 mt-0.5">منظومة المتابعة وافتقاد الخدام الرقمية</p>
+                    </div>
+                </div>
+
+                <!-- Top Action Toolbar -->
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                    <!-- INNOVATIVE FEATURE: Absent Servants Follow-Up Button -->
+                    <button onclick="openFollowUpModal()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 rounded-lg font-bold text-sm shadow-md transition flex items-center gap-2 border border-rose-400/50 hover:shadow-rose-900/30 group">
+                        <i class="fa-solid fa-heart-circle-check text-base text-rose-200 group-hover:scale-110 transition-transform"></i>
+                        <span>افتقاد الغائبين</span>
+                        <span id="absent-badge" class="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full font-black min-w-[20px] text-center">0</span>
+                    </button>
+
+                    <!-- Add Servant Button -->
+                    <button onclick="openAddModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 px-3.5 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>إضافة خادم</span>
+                    </button>
+
+                    <button onclick="manageChurches()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-1.5"><i class="fa-solid fa-church"></i><span>إضافة أو إزالة كنيسة</span></button>
+                    <button onclick="importExcel()" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-1.5"><i class="fa-solid fa-file-import"></i><span>استيراد إكسل</span></button>
+                    <input id="excel-file-input" type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleExcelImport(event)">
+                    <button onclick="searchServant()" class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass"></i><span>بحث باسم الخادم</span></button>
+                    <button onclick="configureCloudSync()" class="bg-cyan-700 hover:bg-cyan-800 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-1.5"><i class="fa-solid fa-cloud"></i><span>مزامنة الأجهزة</span></button>
+
+                    <!-- Export Excel -->
+                    <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span class="hidden sm:inline">تصدير إكسل</span>
+                    </button>
+
+                    <!-- Send WhatsApp Report -->
+                    <button onclick="shareWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span class="hidden sm:inline">تقرير الواتساب</span>
+                    </button>
+
+                    <!-- Print / PDF -->
+                    <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden sm:inline">طباعة / PDF</span>
+                    </button>
+
+                    <!-- PWA Install -->
+                    <button id="pwa-install-btn" onclick="installPWA()" class="hidden bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg font-bold text-sm shadow transition items-center gap-2 animate-pulse">
+                        <i class="fa-brands fa-android text-lg"></i>
+                        <span>تثبيت</span>
+                    </button>
+
+                    <!-- App Icon Modal -->
+                    <button onclick="openIconModal()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 p-2 rounded-lg font-bold text-sm border border-amber-400/30 transition" title="أيقونة التطبيق">
+                        <i class="fa-solid fa-icons text-base"></i>
+                    </button>
+
+                    <!-- Instructions -->
+                    <button onclick="openHelpModal()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg font-bold text-sm transition" title="تعليمات">
+                        <i class="fa-solid fa-circle-question text-amber-300 text-base"></i>
+                    </button>
+
+                    <!-- Clear Data -->
+                    <button onclick="confirmClearData()" class="bg-red-500/20 hover:bg-red-500/40 text-red-200 p-2 rounded-lg font-bold text-sm transition" title="مسح البيانات">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-2 sm:px-4 mt-6 print-container">
+        
+        <!-- Printable Header Banner (Only visible on print) -->
+        <div class="hidden print:block text-center mb-6 page-header pb-4">
+            <h2 class="text-xl font-extrabold text-slate-900">مطرانية الأقباط الأرثوذكس بأسوان</h2>
+            <h3 id="print-church-display" class="text-lg font-bold text-slate-800">كنيسة الشهيد العظيم مارجرجس بالمحطة</h3>
+            <h4 class="text-base font-bold text-blue-900 mt-1">كشف حضور اجتماع الخدام العام</h4>
+            <p id="print-date-display" class="text-sm font-semibold text-slate-600 mt-1"></p>
+        </div>
+
+        <!-- Filters Control Bar -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-6 border border-slate-200 flex flex-wrap items-center justify-between gap-4 no-print">
+            <div class="flex items-center gap-3">
+                <i class="fa-regular fa-calendar-days text-primary text-xl"></i>
+                <span class="font-bold text-slate-700 text-sm">تصفية الكشوفات وإعدادات التقرير:</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                <!-- Church Selection (Includes expanded list) -->
+                <div class="flex-1 min-w-[200px]">
+                    <label for="church-select" class="text-xs font-bold text-slate-500 block mb-1">الكنيسة</label>
+                    <select id="church-select" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-sm text-primary focus:ring-2 focus:ring-primary outline-none">
+                        <option value="ALL">جميع كنائس المطرانية</option>
+                        <option value="كنيسة الشهيد العظيم مارجرجس بالمحطة" selected>مارجرجس المحطة</option>
+                        <option value="كنيسة الشهيد العظيم مارجرجس الفابريقة">مارجرجس الفابريقة</option>
+                        <option value="كنيسة السيدة العذراء بالإسكان الغربي">العذراء الإسكان الغربي</option>
+                        <option value="كنيسة السيدة العذراء بالعليقات">العذراء العليقات</option>
+                        <option value="كنيسة الأنبا باخوميوس بالإصلاح القبلية">الأنبا باخوميوس الإصلاح القبلية</option>
+                        <option value="كنيسة العتمور">كنيسة العتمور</option>
+                        <option value="كنيسة الخفية">كنيسة الخفية</option>
+                        <option value="كنيسة السيدة العذراء بالنجاجرة">العذراء النجاجرة</option>
+                        <option value="كنيسة المطحن">كنيسة المطحن</option>
+                        <option value="كنيسة الألبان">كنيسة الألبان</option>
+                        <option value="كنيسة الملاك ميخائيل بالسبعين">الملاك ميخائيل السبعين</option>
+                        <option value="كنيسة السيدة العذراء بالحرية">العذراء الحرية</option>
+                        <option value="كنيسة الأحمدية">الأحمدية</option>
+                        <option value="كنيسة الرغامة شرق">الرغامة شرق</option>
+                        <option value="كنيسة السلسلة">السلسلة</option>
+                        <option value="كنيسة الكاجوج">الكاجوج</option>
+                        <option value="كنيسة مارجرجس الشبيكة">مارجرجس الشبيكة</option>
+                        <option value="كنيسة مارجرجس سلوا">مارجرجس سلوا</option>
+                        <option value="كنيسة الملاك البيارة">الملاك البيارة</option>
+                        <option value="كنيسة اقليت">اقليت</option>
+                        <option value="كنيسة الرغامة غرب">الرغامة غرب</option>
+                        <option value="كنيسة منيحة">منيحة</option>
+                    </select>
+                </div>
+
+                <!-- Stage Filter -->
+                <div>
+                    <label for="stage-filter-select" class="text-xs font-bold text-slate-500 block mb-1">المرحلة الخدمية</label>
+                    <select id="stage-filter-select" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-sm text-primary focus:ring-2 focus:ring-primary outline-none">
+                        <option value="ALL" selected>جميع المراحل</option>
+                        <option value="ابتدائي">ابتدائي</option>
+                        <option value="اعدادي وثانوي بنين">اعدادي وثانوي بنين</option>
+                        <option value="اعدادي وثانوي بنات">اعدادي وثانوي بنات</option>
+                        <option value="اعدادي وثانوي مشترك">اعدادي وثانوي مشترك</option>
+                    </select>
+                </div>
+
+                <!-- Month Pair Selection -->
+                <div>
+                    <label for="month-select" class="text-xs font-bold text-slate-500 block mb-1">الشهرين</label>
+                    <select id="month-select" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-sm text-primary focus:ring-2 focus:ring-primary outline-none">
+                        <option value="يناير - فبراير">يناير - فبراير</option>
+                        <option value="مارس - أبريل">مارس - أبريل</option>
+                        <option value="مايو - يونيو">مايو - يونيو</option>
+                        <option value="يوليو - أغسطس">يوليو - أغسطس</option>
+                        <option value="سبتمبر - أكتوبر" selected>سبتمبر - أكتوبر</option>
+                        <option value="نوفمبر - ديسمبر">نوفمبر - ديسمبر</option>
+                    </select>
+                </div>
+
+                <!-- Year Selection -->
+                <div>
+                    <label for="year-select" class="text-xs font-bold text-slate-500 block mb-1">السنة</label>
+                    <select id="year-select" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-sm text-primary focus:ring-2 focus:ring-primary outline-none">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                        <option value="2032">2032</option>
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>
+                        <option value="2035">2035</option>
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>
+                        <option value="2038">2038</option>
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Data Table Container -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+            <div class="p-4 bg-slate-50 border-b flex flex-wrap justify-between items-center gap-3 no-print">
+                <div class="flex items-center gap-3 font-bold text-slate-700 text-sm">
+                    <i class="fa-solid fa-users text-amber-500 text-base"></i>
+                    <span>إجمالي الخدام المسجلين:</span>
+                    <span id="servant-count" class="bg-primary text-white px-3 py-0.5 rounded-full text-xs font-black">0</span>
+                </div>
+
+                <div class="flex items-center gap-2 text-xs font-bold text-slate-500">
+                    <span class="inline-block w-3 h-3 bg-emerald-500 rounded-full"></span> حاضر
+                    <span class="inline-block w-3 h-3 bg-slate-300 rounded-full mr-2"></span> غائب
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-slate-700 border-collapse">
+                    <thead>
+                        <tr class="bg-primary text-white text-xs font-bold">
+                            <th class="p-3 border-l border-slate-700 w-10 text-center">م</th>
+                            <th class="p-3 border-l border-slate-700 min-w-[150px] text-right">اسم الخادم</th>
+                            <th class="p-3 border-l border-slate-700 min-w-[120px] text-center">رقم الواتساب</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 1</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 2</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 3</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 4</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 5</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 6</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 7</th>
+                            <th class="p-2 border-l border-slate-700 text-center min-w-[38px]">أسب 8</th>
+                            <th class="p-3 border-l border-slate-700 text-center min-w-[100px] bg-blue-900">الشهرين</th>
+                            <th class="p-3 border-l border-slate-700 text-center w-14">حضور</th>
+                            <th class="p-3 border-l border-slate-700 text-center w-14">غياب</th>
+                            <th class="p-3 border-l border-slate-700 text-center min-w-[140px]">الكنيسة والمرحلة</th>
+                            <th class="p-3 text-center w-20 no-print">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Dynamically generated rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="p-12 text-center hidden">
+                <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                    <i class="fa-solid fa-users-slash"></i>
+                </div>
+                <h3 class="font-bold text-slate-600 mb-1">لا يوجد خدام مسجلين في هذه التصفية</h3>
+                <p class="text-xs text-slate-400">يمكنك تغيير تصفية الكنيسة أو إضافة خدام جدد عبر زر "إضافة خادم"</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-4 mt-8 no-print">
+        <div class="flex justify-between items-center text-slate-500 text-xs">
+            <div></div>
+            <div class="bg-white/80 backdrop-blur border border-slate-200 px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-code text-amber-600"></i>
+                <span class="font-signature text-base font-bold text-slate-800 tracking-wider">برمجة عبدالنور جابر</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add / Edit Servant Modal -->
+    <div id="servant-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-100">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="modal-title" class="text-base font-extrabold text-primary">إضافة خادم جديد</h3>
+                <button onclick="closeServantModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleServantSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-servant-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم الخادم رباعي *</label>
+                    <input type="text" id="servant-name-input" required placeholder="أدخل اسم الخادم الكامل" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف / الواتساب *</label>
+                    <div class="relative">
+                        <input type="tel" id="servant-phone-input" placeholder="01xxxxxxxxx" class="w-full bg-slate-50 border border-slate-300 rounded-lg pl-3 pr-9 py-2 text-sm font-semibold focus:ring-2 focus:ring-primary outline-none" dir="ltr">
+                        <i class="fa-brands fa-whatsapp text-emerald-600 absolute right-3 top-2.5 text-base"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الكنيسة التابع لها *</label>
+                    <select id="servant-church-input" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary outline-none">
+                        <option value="كنيسة الشهيد العظيم مارجرجس بالمحطة">مارجرجس بالمحطة</option>
+                        <option value="كنيسة الشهيد العظيم مارجرجس الفابريقة">مارجرجس الفابريقة</option>
+                        <option value="كنيسة السيدة العذراء بالإسكان الغربي">العذراء الإسكان الغربي</option>
+                        <option value="كنيسة السيدة العذراء بالعليقات">العذراء العليقات</option>
+                        <option value="كنيسة الأنبا باخوميوس بالإصلاح القبلية">الأنبا باخوميوس الإصلاح القبلية</option>
+                        <option value="كنيسة العتمور">كنيسة العتمور</option>
+                        <option value="كنيسة الخفية">كنيسة الخفية</option>
+                        <option value="كنيسة السيدة العذراء بالنجاجرة">العذراء النجاجرة</option>
+                        <option value="كنيسة المطحن">كنيسة المطحن</option>
+                        <option value="كنيسة الألبان">كنيسة الألبان</option>
+                        <option value="كنيسة الملاك ميخائيل بالسبعين">الملاك ميخائيل بالسبعين</option>
+                        <option value="كنيسة السيدة العذراء بالحرية">السيدة العذراء بالحرية</option>
+                        <option value="كنيسة الأحمدية">الأحمدية</option>
+                        <option value="كنيسة الرغامة شرق">الرغامة شرق</option>
+                        <option value="كنيسة السلسلة">السلسلة</option>
+                        <option value="كنيسة الكاجوج">الكاجوج</option>
+                        <option value="كنيسة مارجرجس الشبيكة">مارجرجس الشبيكة</option>
+                        <option value="كنيسة مارجرجس سلوا">مارجرجس سلوا</option>
+                        <option value="كنيسة الملاك البيارة">الملاك البيارة</option>
+                        <option value="كنيسة اقليت">اقليت</option>
+                        <option value="كنيسة الرغامة غرب">الرغامة غرب</option>
+                        <option value="كنيسة منيحة">منيحة</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">المرحلة / فرع الخدمة</label>
+                    <select id="servant-branch-input" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary outline-none">
+                        <option value="ابتدائي">ابتدائي</option>
+                        <option value="اعدادي وثانوي بنين">اعدادي وثانوي بنين</option>
+                        <option value="اعدادي وثانوي بنات">اعدادي وثانوي بنات</option>
+                        <option value="اعدادي وثانوي مشترك">اعدادي وثانوي مشترك</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="closeServantModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-primary hover:bg-blue-900 text-white font-bold text-xs rounded-lg shadow">حفظ البيانات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- INNOVATIVE FEATURE: ABSENT SERVANTS FOLLOW-UP MODAL (مركز افتقاد الخداء الغائبين) -->
+    <div id="followup-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden z-50 flex items-center justify-center p-2 sm:p-4 no-print overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-5 border border-slate-100 my-6 max-h-[90vh] flex flex-col">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b pb-3 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-slate-900">مركز افتقاد وتواصل الخدام الغائبين</h3>
+                        <p class="text-xs text-slate-500">نظام افتقاد رقمي مباشر عبر الواتساب والمكالمات الهاتفية</p>
+                    </div>
+                </div>
+                <button onclick="closeFollowUpModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Follow-up Top Stats & Filter Bar -->
+            <div class="py-3 border-b space-y-3 shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+                    <div class="bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
+                        <span class="block font-bold text-rose-700">غائبون الأسبوع الأخير</span>
+                        <strong id="stat-last-week-absent" class="text-lg font-black text-rose-800">0</strong>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl">
+                        <span class="block font-bold text-amber-700">إنذار افتقاد (أسبوعين فأكثر)</span>
+                        <strong id="stat-critical-absent" class="text-lg font-black text-amber-800">0</strong>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl">
+                        <span class="block font-bold text-emerald-700">تم الاطمئنان والتواصل</span>
+                        <strong id="stat-followed-up" class="text-lg font-black text-emerald-800">0</strong>
+                    </div>
+                </div>
+
+                <!-- Template Selector & Filters -->
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs font-bold text-slate-600 shrink-0">نموذج الرسالة:</label>
+                        <select id="msg-template-select" class="bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-rose-500 outline-none">
+                            <option value="love">💌 رسالة محبة واشتياق للاجتماع</option>
+                            <option value="check">✝️ رسالة اطمئنان وسؤال عن الأحوال</option>
+                            <option value="reminder">⏰ تذكير بموعد الاجتماع القادم</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="setFollowUpFilter('ALL_ABSENT')" id="filter-btn-all" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-primary text-white shadow-sm">الكل</button>
+                        <button onclick="setFollowUpFilter('CRITICAL')" id="filter-btn-critical" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300">⚠️ الإنذار (2+ أسابيع)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Absent List (Scrollable) -->
+            <div id="followup-list-container" class="overflow-y-auto my-3 flex-1 space-y-2 pr-1">
+                <!-- Dynamically Populated Absent Servants -->
+            </div>
+
+            <!-- Footer Action: Export Follow-Up Report to Priests / Supervisors -->
+            <div class="pt-3 border-t flex flex-wrap justify-between items-center gap-2 shrink-0">
+                <p class="text-xs text-slate-500">
+                    <i class="fa-solid fa-lightbulb text-amber-500 ml-1"></i>
+                    توجيه: يمكنك اختيار النقر المباشر للتواصل مع الخادم أو إرسال تقرير افتقاد الآباء الكهنة.
+                </p>
+                <div class="flex items-center gap-2">
+                    <button onclick="shareAbsentReportWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 shadow">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>تقرير افتقاد للآباء والخدام</span>
+                    </button>
+                    <button onclick="closeFollowUpModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-1.5 rounded-lg font-bold text-xs">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Icon Studio Modal -->
+    <div id="icon-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4 no-print overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-6 border border-slate-100 my-8">
+            <div class="flex justify-between items-center border-b pb-4 mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-700 font-bold text-lg">
+                        <i class="fa-solid fa-compass-drafting"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">أيقونة التطبيق الاحترافية (App Icon)</h3>
+                        <p class="text-xs text-slate-500">تصميم خاص لكشف حضور الخدام - مطرانية أسوان</p>
+                    </div>
+                </div>
+                <button onclick="closeIconModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div class="bg-slate-900 rounded-2xl p-6 flex flex-col items-center justify-center border border-slate-800 shadow-inner relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-sky-500/10"></div>
+                    
+                    <div id="svg-icon-container" class="w-48 h-48 drop-shadow-2xl relative z-10 transition transform group-hover:scale-105 duration-300">
+                        <svg id="app-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-full h-full">
+                            <defs>
+                                <linearGradient id="mainBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#0b192e"/>
+                                    <stop offset="50%" stop-color="#1a3d6e"/>
+                                    <stop offset="100%" stop-color="#0d2342"/>
+                                </linearGradient>
+                                <linearGradient id="mainGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#fef3c7"/>
+                                    <stop offset="30%" stop-color="#f59e0b"/>
+                                    <stop offset="70%" stop-color="#d97706"/>
+                                    <stop offset="100%" stop-color="#b45309"/>
+                                </linearGradient>
+                                <linearGradient id="mainEmeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#34d399"/>
+                                    <stop offset="100%" stop-color="#059669"/>
+                                </linearGradient>
+                                <linearGradient id="mainBookGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#ffffff"/>
+                                    <stop offset="100%" stop-color="#e2e8f0"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#mainBgGrad)" stroke="url(#mainGoldGrad)" stroke-width="8"/>
+                            <circle cx="256" cy="220" r="140" fill="none" stroke="url(#mainGoldGrad)" stroke-width="2" stroke-dasharray="6,8" opacity="0.4"/>
+                            <circle cx="256" cy="220" r="150" fill="none" stroke="#60a5fa" stroke-width="1.5" opacity="0.2"/>
+                            <g opacity="0.25" stroke="url(#mainGoldGrad)" stroke-width="2">
+                                <line x1="256" y1="50" x2="256" y2="390" />
+                                <line x1="86" y1="220" x2="426" y2="220" />
+                            </g>
+                            <g>
+                                <path d="M 240 80 L 272 80 L 272 320 L 240 320 Z" fill="url(#mainGoldGrad)"/>
+                                <path d="M 120 204 L 392 204 L 392 236 L 120 236 Z" fill="url(#mainGoldGrad)"/>
+                                <circle cx="256" cy="58" r="9" fill="url(#mainGoldGrad)"/>
+                                <circle cx="98" cy="220" r="9" fill="url(#mainGoldGrad)"/>
+                                <circle cx="414" cy="220" r="9" fill="url(#mainGoldGrad)"/>
+                                <circle cx="256" cy="342" r="9" fill="url(#mainGoldGrad)"/>
+                                <circle cx="256" cy="220" r="38" fill="#1a3d6e" stroke="url(#mainGoldGrad)" stroke-width="6"/>
+                                <circle cx="256" cy="220" r="18" fill="url(#mainGoldGrad)"/>
+                            </g>
+                            <g transform="translate(0, 30)">
+                                <path d="M 140 330 C 180 320 230 325 252 335 L 252 425 C 230 415 180 410 140 420 Z" fill="url(#mainBookGrad)" stroke="#cbd5e1" stroke-width="2"/>
+                                <path d="M 372 330 C 332 320 282 325 260 335 L 260 425 C 282 415 332 410 372 420 Z" fill="url(#mainBookGrad)" stroke="#cbd5e1" stroke-width="2"/>
+                                <path d="M 252 335 Q 256 332 260 335 L 260 425 Q 256 422 252 425 Z" fill="#d97706"/>
+                                <line x1="160" y1="355" x2="235" y2="350" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="160" y1="375" x2="235" y2="370" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="277" y1="350" x2="352" y2="355" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="277" y1="370" x2="352" y2="375" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                            </g>
+                            <g transform="translate(320, 310)">
+                                <circle cx="45" cy="45" r="42" fill="#0f172a" stroke="url(#mainGoldGrad)" stroke-width="4"/>
+                                <circle cx="45" cy="45" r="36" fill="url(#mainEmeraldGrad)"/>
+                                <path d="M 28 45 L 39 56 L 62 33" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <span class="mt-3 text-amber-300 text-xs font-bold bg-white/10 px-3 py-1 rounded-full border border-amber-400/30">
+                        512 × 512 Vector HD
+                    </span>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-check-circle text-emerald-500"></i>
+                            <span>مميزات الأيقونة:</span>
+                        </h4>
+                        <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                            <li>الصليب القبطي الأرثوذكسي العريق بلون ذهبي إمبراطوري.</li>
+                            <li>سجل الحضور القبطي رمز افتقاد وأمانة الخدمة.</li>
+                            <li>متوافقة مع معايير Android Adaptive Icons & PWA.</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-2 border-t space-y-2">
+                        <h4 class="text-xs font-bold text-slate-700">تنزيل الأيقونة:</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="downloadIconPNG()" class="bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow">
+                                <i class="fa-solid fa-file-image text-base"></i>
+                                <span>تحميل PNG</span>
+                            </button>
+                            <button onclick="downloadIconSVG()" class="bg-primary hover:bg-blue-900 text-white p-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow">
+                                <i class="fa-solid fa-code text-base"></i>
+                                <span>تحميل SVG</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 border-t pt-4 text-left">
+                <button onclick="closeIconModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="help-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-100">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-lg font-extrabold text-primary flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-secondary"></i>
+                    <span>طريقة التحميل والتواصل المباشر</span>
+                </h3>
+                <button onclick="closeHelpModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 text-xs md:text-sm text-slate-700 leading-relaxed">
+                <div class="p-3 bg-rose-50 rounded-xl border border-rose-100 flex gap-3 items-start">
+                    <i class="fa-solid fa-heart-pulse text-rose-600 text-xl mt-0.5"></i>
+                    <div>
+                        <strong class="block text-slate-900 mb-0.5">1. افتقاد الخدام الغائبين:</strong>
+                        اضغط على زر <span class="bg-rose-600 text-white px-2 py-0.5 rounded text-xs font-bold">افتقاد الغائبين</span> بأعلى الصفحة لعرض قائمة الحث والتواصل المباشر عبر الواتساب.
+                    </div>
+                </div>
+
+                <div class="p-3 bg-sky-50 rounded-xl border border-sky-100 flex gap-3 items-start">
+                    <i class="fa-solid fa-file-pdf text-red-600 text-xl mt-0.5"></i>
+                    <div>
+                        <strong class="block text-slate-900 mb-0.5">2. التحميل والحفظ كملف PDF:</strong>
+                        اضغط على زر <span class="bg-sky-600 text-white px-2 py-0.5 rounded text-xs font-bold">طباعة / PDF</span> ثم اختر <b>"Save as PDF"</b>.
+                    </div>
+                </div>
+
+                <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex gap-3 items-start">
+                    <i class="fa-solid fa-file-excel text-emerald-600 text-xl mt-0.5"></i>
+                    <div>
+                        <strong class="block text-slate-900 mb-0.5">3. تصدير ملف إكسل (Excel):</strong>
+                        اضغط على زر <span class="bg-emerald-600 text-white px-2 py-0.5 rounded text-xs font-bold">تصدير إكسل</span> لتنزيل البيانات كملف Excel (.csv).
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-left border-t pt-4">
+                <button onclick="closeHelpModal()" class="bg-primary text-white px-5 py-2 rounded-lg font-bold text-xs hover:bg-blue-900 transition">فهمت ذلك</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirm-title" class="text-base font-bold text-slate-800 mb-2">تأكيد الإجراء</h3>
+            <p id="confirm-text" class="text-xs text-slate-500 mb-6">هل أنت تأكد من تنفيذ هذا الإجراء؟</p>
+            <div class="flex justify-center gap-3">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg">إلغاء</button>
+                <button id="confirm-action-btn" onclick="executeConfirmAction()" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg shadow">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default initial data populated with phone numbers
+        const initialServantsData = [
+            { id: 1, name: "مايكل جرجس", phone: "01223456789", church: "كنيسة الشهيد العظيم مارجرجس بالمحطة", branch: "اعدادي وثانوي بنين", attendance: [true, true, true, false, true, true, false, true], followUpStatus: "" },
+            { id: 2, name: "بيشوي يوسف", phone: "01012345678", church: "كنيسة الشهيد العظيم مارجرجس الفابريقة", branch: "ابتدائي", attendance: [true, true, true, true, true, true, true, true], followUpStatus: "" },
+            { id: 3, name: "أبانوب سامح", phone: "01123456789", church: "كنيسة الأنبا باخوميوس بالإصلاح القبلية", branch: "ابتدائي", attendance: [false, true, true, false, false, true, false, false], followUpStatus: "" },
+            { id: 4, name: "مارينا كمال", phone: "01287654321", church: "كنيسة السيدة العذراء بالإسكان الغربي", branch: "اعدادي وثانوي بنات", attendance: [true, true, false, true, true, false, true, true], followUpStatus: "" },
+            { id: 5, name: "سارة رمزي", phone: "01098765432", church: "كنيسة السيدة العذراء بالعليقات", branch: "اعدادي وثانوي بنات", attendance: [true, false, true, true, true, true, false, false], followUpStatus: "" },
+            { id: 6, name: "جرجس صبحي", phone: "01234567890", church: "كنيسة العتمور", branch: "ابتدائي", attendance: [false, false, false, false, true, true, false, false], followUpStatus: "" }
+        ];
+
+        let servants = [];
+        let actionToConfirm = null;
+        let currentFollowUpFilter = 'ALL_ABSENT';
+        let cloudUnsubscribe = null;
+        const CHURCHES_KEY = 'servants_attendance_churches_v1';
+        const REMOVED_CHURCHES_KEY = 'servants_attendance_removed_churches_v1';
+        // Capture the built-in list once, before dynamic options are loaded.
+        const BUILTIN_CHURCHES = [...document.querySelectorAll('#servant-church-input option')].map(o => ({value:o.value,text:o.textContent}));
+
+        window.openIconModal = function() {
+            document.getElementById('icon-modal')?.classList.remove('hidden');
+        };
+
+        window.closeIconModal = function() {
+            document.getElementById('icon-modal')?.classList.add('hidden');
+        };
+
+        window.openHelpModal = function() {
+            document.getElementById('help-modal')?.classList.remove('hidden');
+        };
+
+        window.closeHelpModal = function() {
+            document.getElementById('help-modal')?.classList.add('hidden');
+        };
+
+        window.openAddModal = function() {
+            document.getElementById('edit-servant-id').value = '';
+            document.getElementById('servant-name-input').value = '';
+            document.getElementById('servant-phone-input').value = '';
+            document.getElementById('servant-branch-input').value = 'ابتدائي';
+            
+            const currentChurch = document.getElementById('church-select')?.value;
+            if (currentChurch && currentChurch !== 'ALL') {
+                document.getElementById('servant-church-input').value = currentChurch;
+            } else {
+                document.getElementById('servant-church-input').value = 'كنيسة الشهيد العظيم مارجرجس بالمحطة';
+            }
+
+            document.getElementById('modal-title').innerText = 'إضافة خادم جديد';
+            document.getElementById('servant-modal').classList.remove('hidden');
+        };
+
+        window.closeServantModal = function() {
+            document.getElementById('servant-modal').classList.add('hidden');
+        };
+
+        window.closeConfirmModal = function() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        };
+
+        window.downloadIconSVG = function() {
+            const svgEl = document.getElementById('app-svg-icon');
+            if (!svgEl) return;
+            const svgData = new XMLSerializer().serializeToString(svgEl);
+            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'app_icon_servants_attendance.svg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast("تم تحميل الأيقونة بصيغة SVG بنجاح");
+        };
+
+        window.downloadIconPNG = function() {
+            const svgEl = document.getElementById('app-svg-icon');
+            if (!svgEl) return;
+            const svgData = new XMLSerializer().serializeToString(svgEl);
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, 512, 512);
+                URL.revokeObjectURL(url);
+                const pngUrl = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pngUrl;
+                downloadLink.download = 'app_icon_servants_attendance_512.png';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                showToast("تم تحميل الأيقونة بصيغة PNG (512x512) بنجاح");
+            };
+            img.src = url;
+        };
+
+        function loadData() {
+            const saved = localStorage.getItem('servants_attendance_data_v2');
+            if (saved) {
+                try {
+                    servants = JSON.parse(saved);
+                } catch(e) {
+                    servants = initialServantsData;
+                }
+            } else {
+                servants = initialServantsData;
+                saveData();
+            }
+
+            servants.forEach(s => {
+                if (!s.church) s.church = 'كنيسة الشهيد العظيم مارجرجس بالمحطة';
+                if (!s.phone) s.phone = '';
+                if (!s.followUpStatus) s.followUpStatus = '';
+                if (!Array.isArray(s.attendance)) s.attendance = [];
+                while (s.attendance.length < 8) {
+                    s.attendance.push(false);
+                }
+            });
+        }
+
+        function saveData() {
+            localStorage.setItem('servants_attendance_data_v2', JSON.stringify(servants));
+            updateAbsentBadge();
+            if (typeof publishCloudData === 'function') publishCloudData();
+        }
+
+        function getSelectedChurchName() {
+            const churchSelect = document.getElementById('church-select');
+            if (!churchSelect || churchSelect.value === 'ALL') return 'جميع كنائس المطرانية';
+            return churchSelect.value;
+        }
+
+        function getSelectedMonthName() {
+            const monthSelect = document.getElementById('month-select');
+            const yearSelect = document.getElementById('year-select');
+            const month = monthSelect ? monthSelect.value : 'سبتمبر - أكتوبر';
+            const year = yearSelect ? yearSelect.value : '2026';
+            return `${month} ${year}`;
+        }
+
+        function sanitizePhone(phone) {
+            if (!phone) return '';
+            let cleaned = phone.replace(/\D/g, '');
+            if (cleaned.startsWith('0')) {
+                cleaned = '2' + cleaned; // Add Egypt country code
+            }
+            return cleaned;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            const emptyState = document.getElementById('empty-state');
+            const servantCountEl = document.getElementById('servant-count');
+            const printDateDisplay = document.getElementById('print-date-display');
+            const churchTitleDisplay = document.getElementById('church-title-display');
+            const printChurchDisplay = document.getElementById('print-church-display');
+
+            if (!tbody) return;
+
+            const selectedChurch = document.getElementById('church-select')?.value || 'ALL';
+            const stageFilter = document.getElementById('stage-filter-select')?.value || 'ALL';
+
+            const churchHeaderTitle = getSelectedChurchName();
+            if (churchTitleDisplay) churchTitleDisplay.innerText = churchHeaderTitle;
+            if (printChurchDisplay) printChurchDisplay.innerText = churchHeaderTitle;
+
+            const monthFormatted = getSelectedMonthName();
+            if (printDateDisplay) printDateDisplay.innerText = `عن فترة: ${monthFormatted}`;
+
+            const filteredServants = servants.filter(s => {
+                const churchMatch = (selectedChurch === 'ALL' || s.church === selectedChurch || !s.church);
+                const stageMatch = (stageFilter === 'ALL' || s.branch === stageFilter);
+                return churchMatch && stageMatch;
+            });
+
+            if (servantCountEl) servantCountEl.innerText = filteredServants.length;
+
+            tbody.innerHTML = '';
+
+            if (filteredServants.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+                updateAbsentBadge();
+                return;
+            } else {
+                if (emptyState) emptyState.classList.add('hidden');
+            }
+
+            filteredServants.forEach((servant, index) => {
+                while (servant.attendance.length < 8) servant.attendance.push(false);
+
+                const presentDays = servant.attendance.filter(Boolean).length;
+                const absentDays = 8 - presentDays;
+                const bgClass = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/70';
+                const formattedPhone = sanitizePhone(servant.phone);
+
+                const tr = document.createElement('tr');
+                tr.className = `${bgClass} hover:bg-amber-50/40 transition-colors group`;
+
+                tr.innerHTML = `
+                    <td class="p-3 border-l border-slate-200 text-center font-bold text-slate-500">${index + 1}</td>
+                    
+                    <td class="p-3 border-l border-slate-200 text-right font-bold text-slate-800">
+                        ${servant.name}
+                    </td>
+
+                    <!-- NEW: WhatsApp & Phone Column -->
+                    <td class="p-2 border-l border-slate-200 text-center text-xs">
+                        ${formattedPhone ? `
+                            <a href="https://wa.me/${formattedPhone}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md font-mono border border-emerald-200 transition" title="مراسلة واتساب">
+                                <i class="fa-brands fa-whatsapp text-sm"></i>
+                                <span>${servant.phone}</span>
+                            </a>
+                        ` : `<span class="text-slate-400 italic text-[11px]">غير مدخل</span>`}
+                    </td>
+
+                    ${[0, 1, 2, 3, 4, 5, 6, 7].map(weekIdx => `
+                        <td class="p-1 border-l border-slate-200 text-center">
+                            <label class="inline-flex items-center justify-center cursor-pointer p-0.5">
+                                <input type="checkbox" 
+                                    class="custom-checkbox"
+                                    ${servant.attendance[weekIdx] ? 'checked' : ''}
+                                    onchange="toggleAttendance(${servant.id}, ${weekIdx})"
+                                >
+                            </label>
+                        </td>
+                    `).join('')}
+
+                    <td class="p-3 border-l border-slate-200 text-center font-extrabold text-primary text-xs bg-blue-50/30">
+                        ${monthFormatted}
+                    </td>
+
+                    <td class="p-3 border-l border-slate-200 text-center font-bold">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs ${presentDays > 0 ? 'bg-emerald-100 text-emerald-800 font-black' : 'text-slate-400'}">
+                            ${presentDays}
+                        </span>
+                    </td>
+
+                    <td class="p-3 border-l border-slate-200 text-center font-bold">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs ${absentDays > 4 ? 'bg-rose-100 text-rose-700 font-black' : 'text-slate-500'}">
+                            ${absentDays}
+                        </span>
+                    </td>
+
+                    <td class="p-3 border-l border-slate-200 text-center text-slate-600 font-medium text-xs">
+                        <div class="font-bold text-slate-800">${servant.branch || 'ابتدائي'}</div>
+                        <div class="text-[10px] font-semibold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200/80 mt-1 inline-block max-w-[130px] truncate" title="${servant.church}">
+                            ${servant.church || 'كنيسة مارجرجس بالمحطة'}
+                        </div>
+                    </td>
+
+                    <td class="p-3 text-center no-print">
+                        <div class="flex items-center justify-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editServant(${servant.id})" class="text-sky-600 hover:text-sky-800 p-1.5 rounded hover:bg-sky-50" title="تعديل">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteServant(${servant.id})" class="text-red-500 hover:text-red-700 p-1.5 rounded hover:bg-red-50" title="حذف">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            updateAbsentBadge();
+        }
+
+        function toggleAttendance(servantId, weekIndex) {
+            const servant = servants.find(s => s.id === servantId);
+            if (servant) {
+                servant.attendance[weekIndex] = !servant.attendance[weekIndex];
+                saveData();
+                renderTable();
+            }
+        }
+
+        function handleServantSubmit(event) {
+            event.preventDefault();
+            const editId = document.getElementById('edit-servant-id').value;
+            const name = document.getElementById('servant-name-input').value.trim();
+            const phone = document.getElementById('servant-phone-input').value.trim();
+            const church = document.getElementById('servant-church-input').value;
+            const branch = document.getElementById('servant-branch-input').value;
+
+            if (!name) return;
+
+            if (editId) {
+                const servant = servants.find(s => s.id === parseInt(editId));
+                if (servant) {
+                    servant.name = name;
+                    servant.phone = phone;
+                    servant.church = church;
+                    servant.branch = branch;
+                    showToast("تم تحديث بيانات الخادم بنجاح");
+                }
+            } else {
+                const newServant = {
+                    id: Date.now(),
+                    name: name,
+                    phone: phone,
+                    church: church,
+                    branch: branch || 'ابتدائي',
+                    attendance: [false, false, false, false, false, false, false, false],
+                    followUpStatus: ""
+                };
+                servants.push(newServant);
+                showToast("تمت إضافة الخادم بنجاح");
+            }
+
+            saveData();
+            renderTable();
+            window.closeServantModal();
+        }
+
+        function editServant(id) {
+            const servant = servants.find(s => s.id === id);
+            if (!servant) return;
+
+            document.getElementById('edit-servant-id').value = servant.id;
+            document.getElementById('servant-name-input').value = servant.name;
+            document.getElementById('servant-phone-input').value = servant.phone || '';
+            document.getElementById('servant-church-input').value = servant.church || 'كنيسة الشهيد العظيم مارجرجس بالمحطة';
+            document.getElementById('servant-branch-input').value = servant.branch || 'ابتدائي';
+            document.getElementById('modal-title').innerText = 'تعديل بيانات الخادم';
+            document.getElementById('servant-modal').classList.remove('hidden');
+        }
+
+        function deleteServant(id) {
+            const servant = servants.find(s => s.id === id);
+            if (!servant) return;
+            document.getElementById('confirm-title').innerText = "حذف خادم";
+            document.getElementById('confirm-text').innerText = `هل أنت تأكد من حذف الخادم "${servant.name}"؟`;
+            actionToConfirm = function() {
+                servants = servants.filter(s => s.id !== id);
+                saveData();
+                renderTable();
+                showToast("تم حذف الخادم بنجاح");
+            };
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function confirmClearData() {
+            document.getElementById('confirm-title').innerText = "مسح كافة البيانات";
+            document.getElementById('confirm-text').innerText = "هل أنت تأكد من مسح جميع بيانات الخدام والحضور؟ لا يمكن التراجع عن هذا الإجراء.";
+            actionToConfirm = function() {
+                servants = [];
+                saveData();
+                renderTable();
+                showToast("تم مسح كافة البيانات بنجاح");
+            };
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function executeConfirmAction() {
+            if (actionToConfirm) {
+                actionToConfirm();
+                actionToConfirm = null;
+            }
+            closeConfirmModal();
+        }
+
+        // ==========================================
+        // INNOVATIVE ABSENT SERVANTS FOLLOW-UP SYSTEM
+        // ==========================================
+        
+        function getLatestWeekIndex() {
+            for (let w = 7; w >= 0; w--) {
+                const anyoneChecked = servants.some(s => s.attendance[w]);
+                if (anyoneChecked) return w;
+            }
+            return 0; // Default to week 1 if no attendance taken yet
+        }
+
+        function updateAbsentBadge() {
+            const latestWeek = getLatestWeekIndex();
+            const selectedChurch = document.getElementById('church-select')?.value || 'ALL';
+            const stageFilter = document.getElementById('stage-filter-select')?.value || 'ALL';
+
+            const filtered = servants.filter(s => {
+                const churchMatch = (selectedChurch === 'ALL' || s.church === selectedChurch || !s.church);
+                const stageMatch = (stageFilter === 'ALL' || s.branch === stageFilter);
+                return churchMatch && stageMatch;
+            });
+
+            const absentInLatestWeek = filtered.filter(s => !s.attendance[latestWeek]).length;
+            const badge = document.getElementById('absent-badge');
+            if (badge) {
+                badge.innerText = absentInLatestWeek;
+            }
+        }
+
+        function openFollowUpModal() {
+            renderFollowUpList();
+            document.getElementById('followup-modal')?.classList.remove('hidden');
+        }
+
+        function closeFollowUpModal() {
+            document.getElementById('followup-modal')?.classList.add('hidden');
+        }
+
+        function setFollowUpFilter(filterType) {
+            currentFollowUpFilter = filterType;
+            const btnAll = document.getElementById('filter-btn-all');
+            const btnCritical = document.getElementById('filter-btn-critical');
+
+            if (filterType === 'ALL_ABSENT') {
+                btnAll?.classList.replace('bg-slate-200', 'bg-primary');
+                btnAll?.classList.replace('text-slate-700', 'text-white');
+                btnCritical?.classList.replace('bg-primary', 'bg-slate-200');
+                btnCritical?.classList.replace('text-white', 'text-slate-700');
+            } else {
+                btnCritical?.classList.replace('bg-slate-200', 'bg-primary');
+                btnCritical?.classList.replace('text-slate-700', 'text-white');
+                btnAll?.classList.replace('bg-primary', 'bg-slate-200');
+                btnAll?.classList.replace('text-white', 'text-slate-700');
+            }
+            renderFollowUpList();
+        }
+
+        function renderFollowUpList() {
+            const container = document.getElementById('followup-list-container');
+            if (!container) return;
+
+            const selectedChurch = document.getElementById('church-select')?.value || 'ALL';
+            const stageFilter = document.getElementById('stage-filter-select')?.value || 'ALL';
+            const latestWeek = getLatestWeekIndex();
+
+            const filtered = servants.filter(s => {
+                const churchMatch = (selectedChurch === 'ALL' || s.church === selectedChurch || !s.church);
+                const stageMatch = (stageFilter === 'ALL' || s.branch === stageFilter);
+                return churchMatch && stageMatch;
+            });
+
+            const lastWeekAbsentServants = filtered.filter(s => !s.attendance[latestWeek]);
+            
+            // Critical Absentees: Absent last 2 consecutive weeks or 3+ total
+            const criticalAbsentServants = filtered.filter(s => {
+                const totalAbsent = 8 - s.attendance.filter(Boolean).length;
+                const lastTwoAbsent = (!s.attendance[latestWeek] && (latestWeek > 0 ? !s.attendance[latestWeek - 1] : true));
+                return lastTwoAbsent || totalAbsent >= 3;
+            });
+
+            const followedUpCount = filtered.filter(s => s.followUpStatus && s.followUpStatus !== 'لم يتم التواصل').length;
+
+            document.getElementById('stat-last-week-absent').innerText = lastWeekAbsentServants.length;
+            document.getElementById('stat-critical-absent').innerText = criticalAbsentServants.length;
+            document.getElementById('stat-followed-up').innerText = followedUpCount;
+
+            let displayList = (currentFollowUpFilter === 'CRITICAL') ? criticalAbsentServants : lastWeekAbsentServants;
+
+            container.innerHTML = '';
+
+            if (displayList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                        <i class="fa-solid fa-face-smile text-emerald-500 text-3xl mb-2"></i>
+                        <h4 class="font-bold text-slate-700 text-sm">ممتاز! لا يوجد خدام غائبين يتطابقون مع هذه التصفية</h4>
+                        <p class="text-xs text-slate-400 mt-1">نسبة الحضور مكتملة أو تمت متابعة الجميع بنجاح.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            displayList.forEach(servant => {
+                const totalAbsent = 8 - servant.attendance.filter(Boolean).length;
+                const formattedPhone = sanitizePhone(servant.phone);
+                const isCritical = (!servant.attendance[latestWeek] && (latestWeek > 0 ? !servant.attendance[latestWeek - 1] : false));
+
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-xl border flex flex-wrap items-center justify-between gap-3 transition ${isCritical ? 'bg-rose-50/50 border-rose-200' : 'bg-white border-slate-200 hover:border-slate-300'}`;
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${isCritical ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800'}">
+                            ${isCritical ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-regular fa-clock"></i>'}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-slate-800 text-sm">${servant.name}</h4>
+                                ${isCritical ? `<span class="bg-rose-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">غائب أسبوعين متتاليين</span>` : ''}
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                <span class="font-semibold text-slate-700">${servant.branch || 'ابتدائي'}</span> • 
+                                <span class="text-amber-800 font-bold">${servant.church || 'مارجرجس المحطة'}</span> • 
+                                <span class="text-slate-600 font-bold">إجمالي الغياب: ${totalAbsent} من 8</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Followup Status Dropdown -->
+                        <select onchange="updateServantFollowUpStatus(${servant.id}, this.value)" class="bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 outline-none">
+                            <option value="لم يتم التواصل" ${servant.followUpStatus === 'لم يتم التواصل' || !servant.followUpStatus ? 'selected' : ''}>لم يتم التواصل</option>
+                            <option value="تم الاتصال والاطمئنان" ${servant.followUpStatus === 'تم الاتصال والاطمئنان' ? 'selected' : ''}>✅ تم الاطمئنان</option>
+                            <option value="يحتاج زيارة منزلية" ${servant.followUpStatus === 'يحتاج زيارة منزلية' ? 'selected' : ''}>🏠 يحتاج زيارة</option>
+                            <option value="اعتذر لظروف طارئة" ${servant.followUpStatus === 'اعتذر لظروف طارئة' ? 'selected' : ''}>🙏 اعتذر لظروف</option>
+                        </select>
+
+                        <!-- Direct WhatsApp Touch Button -->
+                        ${formattedPhone ? `
+                            <button onclick="sendWhatsAppFollowUp(${servant.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.2 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm transition">
+                                <i class="fa-brands fa-whatsapp text-sm"></i>
+                                <span>واتساب مباشر</span>
+                            </button>
+                        ` : `
+                            <span class="text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-1 rounded">بدون هاتف</span>
+                        `}
+
+                        <!-- Direct Phone Call -->
+                        ${servant.phone ? `
+                            <a href="tel:${servant.phone}" class="bg-sky-600 hover:bg-sky-700 text-white px-2.5 py-1.2 rounded-lg text-xs font-bold flex items-center gap-1 transition" title="اتصال تلفوني">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </a>
+                        ` : ''}
+                    </div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        function updateServantFollowUpStatus(servantId, status) {
+            const servant = servants.find(s => s.id === servantId);
+            if (servant) {
+                servant.followUpStatus = status;
+                saveData();
+                renderFollowUpList();
+                showToast(`تم تغيير حالة الخادم إلى: ${status}`);
+            }
+        }
+
+        function sendWhatsAppFollowUp(servantId) {
+            const servant = servants.find(s => s.id === servantId);
+            if (!servant) return;
+
+            const formattedPhone = sanitizePhone(servant.phone);
+            if (!formattedPhone) {
+                showToast("يرجى إدخال رقم الهاتف الخادم أولاً");
+                return;
+            }
+
+            const templateType = document.getElementById('msg-template-select')?.value || 'love';
+            const churchName = servant.church || 'الكنيسة';
+            let messageText = '';
+
+            if (templateType === 'love') {
+                messageText = `سلام ونعمة يا أخي المبارك الخادم ${servant.name} 🌹\nنفتقدك جداً في اجتماع الخدام بـ (${churchName}).. نطمئن عليك وعلى محبة المسيح في حياتك وعملك. ننتظر حضورك وبركتك معنا الاجتماع القادم! 🙏✨`;
+            } else if (templateType === 'check') {
+                messageText = `سلام ومحبة أخي الخادم ${servant.name} ✝️\nأحببنا الاطمئنان عليك وعلى أحوالك وصحتك. نرجو أن تكون في كامل الصحة والبركة، ونتمنى رؤيتك معنا قريباً في الخدمة! ❤️`;
+            } else {
+                messageText = `سلام ونعمة الخادم المبارك ${servant.name} ⏰\nتذكير بموعد اجتماع الخدام القادم. حضورك يكمل بركة الخدمة والاجتماع! ننتظرك بكل محبة. ✨`;
+            }
+
+            window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(messageText)}`, '_blank');
+        }
+
+        function shareAbsentReportWhatsApp() {
+            const selectedChurch = document.getElementById('church-select')?.value || 'ALL';
+            const stageFilter = document.getElementById('stage-filter-select')?.value || 'ALL';
+            const latestWeek = getLatestWeekIndex();
+
+            const filtered = servants.filter(s => {
+                const churchMatch = (selectedChurch === 'ALL' || s.church === selectedChurch || !s.church);
+                const stageMatch = (stageFilter === 'ALL' || s.branch === stageFilter);
+                return churchMatch && stageMatch;
+            });
+
+            const absentList = filtered.filter(s => !s.attendance[latestWeek]);
+            if (absentList.length === 0) {
+                showToast("لا يوجد خدام غائبين في هذه التصفية");
+                return;
+            }
+
+            const monthFormatted = getSelectedMonthName();
+            const churchName = getSelectedChurchName();
+
+            let report = `✝️ *تقرير افتقاد الخدام الغائبين - مطرانية أسوان*\n⛪ *${churchName}*\n🗓 *فترة: ${monthFormatted}*\n\n`;
+            report += `📋 *قائمة الخدام الغائبين المرجو افتقادهم:*\n`;
+
+            absentList.forEach((s, i) => {
+                const phoneStr = s.phone ? `📱 ${s.phone}` : 'بدون هاتف';
+                const statusStr = s.followUpStatus ? ` [حالة: ${s.followUpStatus}]` : '';
+                report += `${i + 1}. *${s.name}* (${s.branch || 'ابتدائي'})\n   📍 ${s.church || ''} | ${phoneStr}${statusStr}\n`;
+            });
+
+            report += `\nصلوا من أجل أمانة الخدمة والافتقاد 🌹\nتم استخراج التقرير من تطبيق كشف حضور الخدام | برمجة عبدالنور جابر.`;
+
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(report)}`, '_blank');
+        }
+
+        function exportToExcel() {
+            if (servants.length === 0) {
+                showToast("لا يوجد خدام لتصدير البيانات");
+                return;
+            }
+
+            const monthFormatted = getSelectedMonthName();
+            const churchName = getSelectedChurchName();
+            let csvContent = `\uFEFFالتصنيف: ${churchName}\n`;
+            csvContent += "م,اسم الخادم,رقم الهاتف/الواتساب,الكنيسة,المرحلة الخدمية,الأسبوع 1,الأسبوع 2,الأسبوع 3,الأسبوع 4,الأسبوع 5,الأسبوع 6,الأسبوع 7,الأسبوع 8,الشهرين,عدد أيام الحضور,عدد أيام الغياب\n";
+
+            const selectedChurch = document.getElementById('church-select')?.value || 'ALL';
+            const stageFilter = document.getElementById('stage-filter-select')?.value || 'ALL';
+
+            const filteredServants = servants.filter(s => {
+                const churchMatch = (selectedChurch === 'ALL' || s.church === selectedChurch || !s.church);
+                const stageMatch = (stageFilter === 'ALL' || s.branch === stageFilter);
+                return churchMatch && stageMatch;
+            });
+
+            filteredServants.forEach((s, i) => {
+                while (s.attendance.length < 8) s.attendance.push(false);
+                const present = s.attendance.filter(Boolean).length;
+                const absent = 8 - present;
+                const weeksStatus = s.attendance.map(w => w ? "حاضر" : "غائب").join('","');
+
+                csvContent += `"${i + 1}","${s.name}","${s.phone || ''}","${s.church || ''}","${s.branch || 'ابتدائي'}","${weeksStatus}","${monthFormatted}","${present}","${absent}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `كشف_حضور_${churchName.replace(/\s+/g, '_')}_${monthFormatted.replace(/\s+/g, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("تم تحميل ملف الإكسل بنجاح");
+        }
+
+        function shareWhatsApp() {
+            if (servants.length === 0) {
+                showToast("لا يوجد خدام لمشاركة التقرير");
+                return;
+            }
+
+            const selectedChurch = document.getElementById('church-select')?.value || 'ALL';
+            const stageFilter = document.getElementById('stage-filter-select')?.value || 'ALL';
+
+            const filteredServants = servants.filter(s => {
+                const churchMatch = (selectedChurch === 'ALL' || s.church === selectedChurch || !s.church);
+                const stageMatch = (stageFilter === 'ALL' || s.branch === stageFilter);
+                return churchMatch && stageMatch;
+            });
+
+            const monthFormatted = getSelectedMonthName();
+            const churchName = getSelectedChurchName();
+            let text = `📋 *كشف حضور اجتماع الخدام العام*\n⛪ *${churchName}*\n🗓 *الفترة: ${monthFormatted}*\n\n`;
+
+            filteredServants.forEach((s, i) => {
+                while (s.attendance.length < 8) s.attendance.push(false);
+                const present = s.attendance.filter(Boolean).length;
+                text += `${i + 1}. *${s.name}* ${s.phone ? `(${s.phone})` : ''}\n   📍 ${s.church || 'كنيسة غير محددة'} | ${s.branch || 'ابتدائي'}\n   - الحضور: ${present} من 8 أسابيع\n`;
+            });
+
+            text += `\n✨ تم استخراج التقرير من تطبيق كشف حضور الخدام | برمجة عبدالنور جابر.`;
+
+            const encodedText = encodeURIComponent(text);
+            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+        }
+
+
+        function churchOptions() {
+            let saved=[], removed=[];
+            try { saved=JSON.parse(localStorage.getItem(CHURCHES_KEY)||'[]'); } catch(e) {}
+            try { removed=JSON.parse(localStorage.getItem(REMOVED_CHURCHES_KEY)||'[]'); } catch(e) {}
+            const removedSet=new Set(removed);
+            const map=new Map();
+            [...BUILTIN_CHURCHES,...saved].forEach(c=>{ if(c && c.value && c.value!=='ALL' && !removedSet.has(c.value)) map.set(c.value,c); });
+            servants.forEach(s=>{ if(s.church && !removedSet.has(s.church) && !map.has(s.church)) map.set(s.church,{value:s.church,text:s.church.replace(/^كنيسة\s*/,'')}); });
+            return [...map.values()];
+        }
+        function loadChurchOptions() {
+            const churches=churchOptions();
+            localStorage.setItem(CHURCHES_KEY,JSON.stringify(churches));
+            ['church-select','servant-church-input'].forEach(id=>{
+                const el=document.getElementById(id); if(!el) return;
+                const previous=el.value;
+                if(id==='church-select') el.innerHTML='<option value="ALL">جميع كنائس المطرانية</option>';
+                else el.innerHTML='';
+                churches.forEach(c=>{ const o=document.createElement('option'); o.value=c.value; o.textContent=c.text; el.appendChild(o); });
+                if([...el.options].some(o=>o.value===previous)) el.value=previous;
+                else if(id==='servant-church-input' && el.options.length) el.selectedIndex=0;
+            });
+        }
+        window.manageChurches=function(){
+            const choice=prompt('إدارة الكنائس:\n1 - إضافة كنيسة\n2 - إزالة كنيسة\n\nاكتب 1 أو 2:');
+            if(choice==='1'){ addChurch(); return; }
+            if(choice==='2'){ removeChurch(); return; }
+            if(choice!==null) showToast('اختيار غير صحيح؛ اكتب 1 للإضافة أو 2 للإزالة');
+        };
+        window.addChurch=function(){
+            const name=prompt('اكتب اسم الكنيسة الجديدة:'); if(!name || !name.trim()) return;
+            const full=name.trim().startsWith('كنيسة')?name.trim():'كنيسة '+name.trim();
+            if(churchOptions().some(c=>c.value===full)){ showToast('الكنيسة موجودة بالفعل'); return; }
+            let removed=[]; try { removed=JSON.parse(localStorage.getItem(REMOVED_CHURCHES_KEY)||'[]'); } catch(e) {}
+            localStorage.setItem(REMOVED_CHURCHES_KEY,JSON.stringify(removed.filter(x=>x!==full)));
+            const churches=churchOptions(); churches.push({value:full,text:full.replace(/^كنيسة\s*/,'')});
+            localStorage.setItem(CHURCHES_KEY,JSON.stringify(churches)); loadChurchOptions();
+            document.getElementById('church-select').value=full;
+            document.getElementById('servant-church-input').value=full;
+            if (typeof publishCloudData === 'function') publishCloudData();
+            renderTable(); showToast('تمت إضافة الكنيسة للقائمة');
+        };
+        window.removeChurch=function(){
+            const churches=churchOptions();
+            if(!churches.length){ showToast('لا توجد كنائس لإزالتها'); return; }
+            const listing=churches.map((c,i)=>`${i+1} - ${c.text}`).join('\n');
+            const answer=prompt('اكتب رقم الكنيسة التي تريد إزالتها:\n\n'+listing);
+            if(answer===null) return;
+            const index=Number.parseInt(answer,10)-1;
+            if(!Number.isInteger(index)||index<0||index>=churches.length){ showToast('رقم الكنيسة غير صحيح'); return; }
+            const target=churches[index];
+            if(!confirm(`هل تريد إزالة «${target.text}» من قائمة الكنائس؟ سيتم نقل الخدام المسجلين عليها إلى كنيسة أخرى إن اخترت ذلك.`)) return;
+            const remaining=churches.filter(c=>c.value!==target.value);
+            let replacement='';
+            const assigned=servants.filter(s=>s.church===target.value);
+            if(assigned.length && remaining.length){
+                const choices=remaining.map((c,i)=>`${i+1} - ${c.text}`).join('\n');
+                const pick=prompt(`يوجد ${assigned.length} خادم/خدام مسجلين على هذه الكنيسة. اكتب رقم الكنيسة التي تريد نقلهم إليها:\n\n${choices}`);
+                if(pick===null) return;
+                const ri=Number.parseInt(pick,10)-1;
+                if(!Number.isInteger(ri)||ri<0||ri>=remaining.length){ showToast('رقم الكنيسة البديلة غير صحيح؛ لم يتم الحذف'); return; }
+                replacement=remaining[ri].value;
+            } else if(assigned.length){
+                if(!confirm('هذه آخر كنيسة في القائمة ويوجد خدام مسجلون عليها. هل تريد إزالة الكنيسة وإزالة ارتباط هؤلاء الخدام بها؟')) return;
+            }
+            assigned.forEach(s=>{ s.church=replacement; });
+            let removed=[]; try { removed=JSON.parse(localStorage.getItem(REMOVED_CHURCHES_KEY)||'[]'); } catch(e) {}
+            if(!removed.includes(target.value)) removed.push(target.value);
+            localStorage.setItem(REMOVED_CHURCHES_KEY,JSON.stringify(removed));
+            localStorage.setItem(CHURCHES_KEY,JSON.stringify(remaining));
+            loadChurchOptions();
+            const churchFilter=document.getElementById('church-select');
+            if(churchFilter && churchFilter.value===target.value) churchFilter.value='ALL';
+            const churchInput=document.getElementById('servant-church-input');
+            if(churchInput && churchInput.value===target.value) churchInput.value=replacement || (remaining[0]?.value||'');
+            saveData();
+            renderTable();
+            showToast('تمت إزالة الكنيسة من القائمة');
+        };
+        window.importExcel=function(){ document.getElementById('excel-file-input')?.click(); };
+        window.handleExcelImport=function(event){
+            const file=event.target.files?.[0]; if(!file) return;
+            if(!window.XLSX){ showToast('تعذر تحميل مكتبة Excel؛ تحقق من الاتصال بالإنترنت'); return; }
+            const reader=new FileReader();
+            reader.onload=function(e){
+                try{
+                    const wb=XLSX.read(e.target.result,{type:'array'});
+                    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+                    if(!rows.length){ showToast('الملف لا يحتوي على صفوف بيانات'); return; }
+                    const norm=x=>String(x??'').trim().toLowerCase().replace(/[\s_\-\/()]+/g,'');
+                    const pick=(r,keys)=>{ for(const k of Object.keys(r)){ if(keys.includes(norm(k))) return r[k]; } return ''; };
+                    let added=0, updated=0; const newChurches=churchOptions();
+                    rows.forEach(r=>{
+                        const name=String(pick(r,['اسمالخادم','الاسم','name','servantname','اسم']).trim?.() ?? pick(r,['اسمالخادم','الاسم','name','servantname','اسم'])).trim();
+                        if(!name) return;
+                        const phone=String(pick(r,['رقمالهاتف','الهاتف','رقمالواتساب','phone','mobile','whatsapp'])||'').trim();
+                        let church=String(pick(r,['الكنيسة','الكنيسه','church'])||'كنيسة الشهيد العظيم مارجرجس بالمحطة').trim();
+                        if(church && !church.startsWith('كنيسة')) church='كنيسة '+church;
+                        let branch=String(pick(r,['المرحلة','المرحله','الفرع','المرحلةالخدمية','branch','stage'])||'ابتدائي').trim();
+                        const aliases={'اعدادي وثانوي مشترك':'اعدادي وثانوي مشترك','إعدادي وثانوي مشترك':'اعدادي وثانوي مشترك'};
+                        branch=aliases[branch]||branch;
+                        if(!['ابتدائي','اعدادي وثانوي بنين','اعدادي وثانوي بنات','اعدادي وثانوي مشترك'].includes(branch)) branch='ابتدائي';
+                        let existing=servants.find(x=>x.name.trim().toLowerCase()===name.toLowerCase() && (phone ? x.phone===phone : true));
+                        const att=[];
+                        for(let i=1;i<=8;i++){ let v=pick(r,[`أسب${i}`,`اسبوع${i}`,`الأسبوع${i}`,`week${i}`,`attendance${i}`]); att.push(['حاضر','نعم','true','1','yes','present'].includes(String(v).trim().toLowerCase()) || v===true || v===1); }
+                        if(existing){ existing.phone=phone||existing.phone; existing.church=church||existing.church; existing.branch=branch; if(Object.keys(r).some(k=>/اسبوع|أسب|week|attendance/i.test(k))) existing.attendance=att; updated++; }
+                        else { servants.push({id:Date.now()+Math.floor(Math.random()*100000),name,phone,church,branch,attendance:att,followUpStatus:''}); added++; }
+                        if(church && !newChurches.some(c=>c.value===church)) newChurches.push({value:church,text:church.replace(/^كنيسة\s*/,'')});
+                    });
+                    localStorage.setItem(CHURCHES_KEY,JSON.stringify(newChurches)); saveData(); loadChurchOptions(); renderTable();
+                    showToast(`تم الاستيراد: ${added} جديد، ${updated} تحديث`);
+                }catch(err){ console.error(err); showToast('تعذر قراءة الملف. تأكد من سلامة ملف Excel'); }
+                event.target.value='';
+            };
+            reader.readAsArrayBuffer(file);
+        };
+        window.searchServant=function(){
+            const query=prompt('اكتب اسم الخادم أو جزءًا منه للبحث:'); if(query===null) return;
+            const q=query.trim().toLowerCase();
+            if(!q){ renderTable(); return; }
+            const matches=servants.filter(s=>s.name.toLowerCase().includes(q));
+            const tbody=document.getElementById('table-body');
+            if(!matches.length){ showToast('لم يتم العثور على خادم بهذا الاسم'); return; }
+            // Apply a temporary name filter to the current rendered table.
+            document.getElementById('church-select').value='ALL';
+            document.getElementById('stage-filter-select').value='ALL';
+            renderTable();
+            [...tbody.querySelectorAll('tr')].forEach(tr=>{ if(!tr.innerText.toLowerCase().includes(q)) tr.remove(); });
+            document.getElementById('servant-count').innerText=matches.length;
+            document.getElementById('empty-state').classList.toggle('hidden',matches.length>0);
+            showToast(`نتائج البحث: ${matches.length}`);
+        };
+
+        // Firebase configuration supplied for this app. Firestore/Auth use the compat SDK below.
+        // IMPORTANT: Firestore security rules must be published in Firebase Console; HTML cannot deploy rules.
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUOoT5j5lfxqMC2ppHGRN4UDd5Pr3Etkw",
+            authDomain: "church-attendance-ce9cb.firebaseapp.com",
+            projectId: "church-attendance-ce9cb",
+            storageBucket: "church-attendance-ce9cb.firebasestorage.app",
+            messagingSenderId: "592302538779",
+            appId: "1:592302538779:web:fd218542b6e545d5ef78be",
+            measurementId: "G-XSQ4E6ZK4F"
+        };
+        // One click enables sync with the configured Firebase project on this device.
+        window.configureCloudSync=async function(){
+            try{
+                localStorage.setItem('servants_firebase_config',JSON.stringify(firebaseConfig));
+                await startCloudSync(firebaseConfig);
+            }catch(e){ console.error(e); showToast('تعذر إعداد المزامنة؛ راجع الاتصال وإعدادات Firebase'); }
+        };
+        async function startCloudSync(cfg){
+            const loadScript=src=>new Promise((resolve,reject)=>{
+                if(document.querySelector(`script[src="${src}"]`)){resolve();return;}
+                const el=document.createElement('script'); el.src=src; el.onload=resolve; el.onerror=reject; document.head.appendChild(el);
+            });
+            try{
+                await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+                await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');
+                await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js');
+                const app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg);
+                const auth=firebase.auth(app);
+                if(!auth.currentUser){
+                    const email=prompt('البريد الإلكتروني لمستخدم Firebase:'); if(!email) return;
+                    const password=prompt('كلمة مرور Firebase:'); if(!password) return;
+                    try{ await auth.signInWithEmailAndPassword(email,password); }
+                    catch(e){ if(e.code==='auth/user-not-found') await auth.createUserWithEmailAndPassword(email,password); else throw e; }
+                }
+                const db=firebase.firestore(app), doc=db.collection('sharedData').doc('attendance');
+                window.__cloudDoc=doc;
+                if(cloudUnsubscribe) cloudUnsubscribe();
+                cloudUnsubscribe=doc.onSnapshot(snap=>{
+                    if(!snap.exists){
+                        doc.set({servants:servants,churches:churchOptions(),updatedAt:Date.now()})
+                            .catch(e=>showToast('تعذر إنشاء سجل المزامنة؛ تحقق من صلاحيات Firestore'));
+                        return;
+                    }
+                    if(snap.data().servants && !window.__publishingCloud){
+                        servants=snap.data().servants;
+                        if(snap.data().churches) localStorage.setItem(CHURCHES_KEY,JSON.stringify(snap.data().churches));
+                        localStorage.setItem('servants_attendance_data_v2',JSON.stringify(servants));
+                        loadChurchOptions(); renderTable(); showToast('تم تحديث البيانات من الأجهزة الأخرى');
+                    }
+                },err=>showToast('تعذرت المزامنة: تحقق من صلاحيات Firestore'));
+                showToast('تم تفعيل المزامنة السحابية على هذا الجهاز');
+            }catch(e){ console.error(e); showToast('فشل الاتصال بـ Firebase. تحقق من الإعدادات والاتصال'); }
+        }
+        function publishCloudData(){
+            if(!window.__cloudDoc || window.__publishingCloud) return;
+            window.__publishingCloud=true;
+            window.__cloudDoc.set({servants:servants,churches:churchOptions(),updatedAt:Date.now()})
+                .catch(e=>showToast('تعذر رفع التعديلات إلى السحابة'))
+                .finally(()=>{window.__publishingCloud=false;});
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            if (toast && toastText) {
+                toastText.innerText = message;
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        window.onload = function() {
+            setupPWA();
+            loadData();
+            renderTable();
+
+            document.getElementById('church-select')?.addEventListener('change', renderTable);
+            document.getElementById('stage-filter-select')?.addEventListener('change', renderTable);
+            document.getElementById('month-select')?.addEventListener('change', renderTable);
+            document.getElementById('year-select')?.addEventListener('change', renderTable);
+        };
+
+        let deferredPrompt = null;
+
+        function setupPWA() {
+            const manifest = {
+                name: "كشف حضور اجتماع الخدام العام",
+                short_name: "حضور الخدام",
+                description: "تطبيق كشف حضور اجتماع الخدام العام وافتقادهم - مطرانية أسوان",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#1a3d6e",
+                theme_color: "#1a3d6e",
+                icons: [
+                    {
+                        src: "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                        sizes: "512x512",
+                        type: "image/png",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            const manifestURL = URL.createObjectURL(manifestBlob);
+            const manifestTag = document.getElementById('manifest-placeholder');
+            if (manifestTag) manifestTag.setAttribute('href', manifestURL);
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                const installBtn = document.getElementById('pwa-install-btn');
+                if (installBtn) {
+                    installBtn.classList.remove('hidden');
+                    installBtn.classList.add('flex');
+                }
+            });
+        }
+
+        window.installPWA = async function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast("تم تثبيت التطبيق بنجاح على هاتفك!");
+                }
+                deferredPrompt = null;
+                const installBtn = document.getElementById('pwa-install-btn');
+                if (installBtn) installBtn.classList.add('hidden');
+            } else {
+                showToast("التطبيق مثبت بالفعل أو يمكنك تثبيته من خيارات المتصفح");
+            }
+        };
+    </script>
+<script type="module">
+  // Firebase Web SDK initialization and optional Analytics from the supplied configuration.
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+  import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDUOoT5j5lfxqMC2ppHGRN4UDd5Pr3Etkw",
+    authDomain: "church-attendance-ce9cb.firebaseapp.com",
+    projectId: "church-attendance-ce9cb",
+    storageBucket: "church-attendance-ce9cb.firebasestorage.app",
+    messagingSenderId: "592302538779",
+    appId: "1:592302538779:web:fd218542b6e545d5ef78be",
+    measurementId: "G-XSQ4E6ZK4F"
+  };
+
+  try {
+    const app = initializeApp(firebaseConfig, "attendance-analytics");
+    if (await isSupported()) getAnalytics(app);
+  } catch (error) {
+    // Analytics is optional; do not interrupt attendance or Firestore synchronization.
+    console.info("Firebase Analytics unavailable in this browser/context.", error);
+  }
+</script>
+</body>
+</html>
